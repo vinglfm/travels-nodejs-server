@@ -1,0 +1,23 @@
+{
+  "name": "travels-nodejs-server",
+  "version": "1.0.0",
+  "description": "Server side on node js for travels app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vinglfm/travels-nodejs-server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vinglfm/travels-nodejs-server/issues"
+  },
+  "homepage": "https://github.com/vinglfm/travels-nodejs-server#readme",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3"
+  }
+}
