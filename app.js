@@ -14,7 +14,6 @@ db.once('open', function() {
     console.log('Connected to MongoDb Atlas');
 });
 
-
 app.use(cors());
 
 app.use(bodyParser.json());

@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
+const config = require('../config');
 
 const UserSchema = new mongoose.Schema({
     email: {
@@ -13,6 +15,18 @@ const UserSchema = new mongoose.Schema({
       },
       firstName: String,
       lastName: String,
+});
+
+UserSchema.pre('save', function (next) {
+  const user = this;
+  bcrypt.hash(user.password, config.salt, function (err, hash) {
+    console.log('inside');
+    if (err) {
+      return next(err);
+    }
+    user.password = hash;
+    next();
+  })
 });
 
 const User = mongoose.model('User', UserSchema);
