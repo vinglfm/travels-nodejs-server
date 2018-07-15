@@ -18,8 +18,23 @@ app.use(cors());
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-    res.send('Main page');
+app.post('/', (req, res, next) => {
+    console.log(req.body.email, req.body.password);
+    if(req.body.email && req.body.password) {
+        User.authenticate(req.body.email, req.body.password, function (err, user) {
+            if (err || !user) {
+            err = new Error('Email or password is not correct');
+            err.status = 401;
+            return next(err);
+            } else {
+                return res.send('Main page');
+            }
+        });
+    } else {
+      const err = new Error('Email or password is not specified');
+      err.status = 400;
+      return next(err);
+    }
 });
 
 app.post('/users/authenticate/signIn', (req, res) => {
