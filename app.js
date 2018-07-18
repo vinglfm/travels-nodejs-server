@@ -19,7 +19,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.post('/', (req, res, next) => {
-    console.log(req.body.email, req.body.password);
     if(req.body.email && req.body.password) {
         User.authenticate(req.body.email, req.body.password, function (err, user) {
             if (err || !user) {
@@ -42,12 +41,16 @@ app.post('/users/authenticate/signIn', (req, res) => {
         email: req.body.email,
         password: req.body.password
     }, function(error, user) {
-        res.json({ 
-            user: user.email,
-            token: 5,
-            firstName: 'And',
-            lastName: 'mescx'
-          });
+        if(error) {
+            return next(error);
+        } else {
+            return res.json({ 
+                user: user.email,
+                token: 5,
+                firstName: user.firstName,
+                lastName: user.lastName
+            });
+        }
     });
 });
 
@@ -58,12 +61,16 @@ app.post('/users/authenticate/signUp', (req, res) => {
         firstName: req.body.firstName,
         lastName: req.body.lastName
     }, function(error, user) {
-        res.json({ 
-            user: user.email,
-            token: 5,
-            firstName: user.firstName,
-            lastName: user.lastName
-          });
+        if(error) {
+            return next(error);
+        } else {
+            return res.json({ 
+                user: user.email,
+                token: 5,
+                firstName: user.firstName,
+                lastName: user.lastName
+            });
+        }
     });
 });
 
