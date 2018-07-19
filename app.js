@@ -9,10 +9,8 @@ const authRouter = require('./routes/auth');
 const echoRouter = require('./routes/echo');
 
 const authorization = (req, res, next) => {
-
     const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
     const [login, password] = new Buffer(b64auth, 'base64').toString().split(':');
-    console.log(login, password);
     if(login && password) {
         User.authenticate(login, password, function (err, user) {
             if (err || !user) {
@@ -29,6 +27,8 @@ const authorization = (req, res, next) => {
       return next(err);
     }
 };
+
+app.set('secret', config.secret);
 
 mongoose.connect(`mongodb+srv://vinglfm:${config.mongo.password}@travels-yiabu.gcp.mongodb.net/travels`);
 const db = mongoose.connection;

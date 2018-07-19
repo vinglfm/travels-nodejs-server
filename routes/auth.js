@@ -1,5 +1,7 @@
 const router = require('express').Router();
+const jwt = require('jsonwebtoken');
 const User = require('../model/user');
+const config = require('../config');
 
 router.post('/signIn', (req, res) => {
     User.create({
@@ -29,9 +31,12 @@ router.post('/signUp', (req, res) => {
         if(error) {
             return next(error);
         } else {
+            const token = jwt.sign({'user': user.email}, config.secret, {
+                expiresIn : 1440
+              });
             return res.json({ 
                 user: user.email,
-                token: 5,
+                token: token,
                 firstName: user.firstName,
                 lastName: user.lastName
             });
