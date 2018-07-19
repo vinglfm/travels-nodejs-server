@@ -3,6 +3,10 @@ const jwt = require('jsonwebtoken');
 const User = require('../model/user');
 const config = require('../config');
 
+const maskPassword = (password) => {
+    return config.auth.mask + password.toUpperCase().substr(4);
+};
+
 router.post('/signIn', (req, res) => {
     User.create({
         email: req.body.email,
@@ -21,7 +25,7 @@ router.post('/signIn', (req, res) => {
     });
 });
 
-router.post('/signUp', (req, res) => {
+router.post('/signUp', (req, res, next) => {
     User.create({
         email: req.body.email,
         password: req.body.password,
@@ -31,9 +35,13 @@ router.post('/signUp', (req, res) => {
         if(error) {
             return next(error);
         } else {
-            const token = jwt.sign({'user': user.email}, config.secret, {
-                expiresIn : 1440
+            const token = jwt.sign({
+                'user': user.email,
+                'password': maskPassword(user.password) 
+            }, config.auth.secret, {
+                expiresIn: 1440
               });
+              console.log(token);
             return res.json({ 
                 user: user.email,
                 token: token,

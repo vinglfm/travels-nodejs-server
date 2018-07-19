@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const config = require('./config');
@@ -9,28 +10,24 @@ const authRouter = require('./routes/auth');
 const echoRouter = require('./routes/echo');
 
 const authorization = (req, res, next) => {
-    const b64auth = (req.headers.authorization || '').split(' ')[1] || '';
-    const [login, password] = new Buffer(b64auth, 'base64').toString().split(':');
-    if(login && password) {
-        User.authenticate(login, password, function (err, user) {
-            if (err || !user) {
-            err = new Error('Email or password is not correct');
-            err.status = 401;
-            return next(err);
+    const token = req.body.token || req.query.token || req.headers['x-access-token'];
+    if(token) {
+        jwt.verify(token, config.auth.secret, function(err, decoded) {
+            if(err) {
+                return next(err);
             } else {
-                return next();
+                console.log(decoded);
+                next();
             }
-        });
+        });    
     } else {
-      const err = new Error('Email or password is not specified');
+      const err = new Error('Token is not specified');
       err.status = 400;
       return next(err);
     }
 };
 
-app.set('secret', config.secret);
-
-mongoose.connect(`mongodb+srv://vinglfm:${config.mongo.password}@travels-yiabu.gcp.mongodb.net/travels`);
+mongoose.connect(`mongodb+srv://${config.mongo.user}:${config.mongo.password}@${config.mongo.url}`);
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', function() {
