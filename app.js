@@ -16,7 +16,6 @@ const authorization = (req, res, next) => {
             if(err) {
                 return next(err);
             } else {
-                console.log(decoded);
                 next();
             }
         });    
