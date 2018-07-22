@@ -10,21 +10,31 @@ const UserSchema = new mongoose.Schema({
         dropDups: true
       },
       password: {
-        type: String,
-        required: true
+        type: String
+      },
+      facebookProvider: {
+        type: {
+          id: String,
+          token: String
+        },
+        select: false
       },
       fullName: String
 });
 
 UserSchema.pre('save', function (next) {
   const user = this;
-  bcrypt.hash(user.password, config.auth.salt, function (err, hash) {
-    if (err) {
-      return next(err);
-    }
-    user.password = hash;
+  if(user.password) {
+    bcrypt.hash(user.password, config.auth.salt, function (err, hash) {
+      if (err) {
+        return next(err);
+      }
+      user.password = hash;
+      next();
+    });
+  } else {
     next();
-  })
+  }
 });
 
 UserSchema.statics.authenticate = function (email, password, callback) {
@@ -45,7 +55,30 @@ UserSchema.statics.authenticate = function (email, password, callback) {
         }
       });
     });
-}
+};
+
+UserSchema.statics.upsertFbUser = function(accessToken, refreshToken, profile, cb) {
+  User.findOne({'facebookProvider.id': profile.id}, function(err, user) {
+    if(!user) {
+      const newUser = new User({
+        email: profile.emails[0].value,
+        fullName: profile.displayName,
+        facebookProvider: {
+          id: profile.id,
+          token: accessToken
+        }
+      });
+      newUser.save(function(error, savedUser) {
+        if(error) {
+          console.log(error);
+        }
+        return cb(error, savedUser);
+      });
+    } else {
+      return cb(err, user);
+    }
+  });
+};
 
 const User = mongoose.model('User', UserSchema);
 module.exports = User;
