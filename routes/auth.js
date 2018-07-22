@@ -16,7 +16,7 @@ const generateToken = (user, password) => {
     });
 };
 
-router.post('/signIn', (req, res) => {
+router.post('/signIn', (req, res, next) => {
     User.authenticate(req.body.email, req.body.password, function(error, user) {
         if(error) {
             return next(error);
@@ -28,8 +28,7 @@ router.post('/signIn', (req, res) => {
             return res.json({ 
                 user: user.email,
                 token: generateToken(user.email, user.password),
-                firstName: user.firstName,
-                lastName: user.lastName
+                fullName: user.fullName
             });
     }});
 });
@@ -38,8 +37,7 @@ router.post('/signUp', (req, res, next) => {
     User.create({
         email: req.body.email,
         password: req.body.password,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName
+        fullName: req.body.firstName + ' ' + req.body.lastName
     }, function(error, user) {
         if(error) {
             return next(error);
@@ -47,8 +45,7 @@ router.post('/signUp', (req, res, next) => {
             return res.json({ 
                 user: user.email,
                 token: generateToken(user.email, user.password),
-                firstName: user.firstName,
-                lastName: user.lastName
+                fullName: user.fullName
             });
         }
     });

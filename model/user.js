@@ -13,8 +13,7 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true
       },
-      firstName: String,
-      lastName: String,
+      fullName: String
 });
 
 UserSchema.pre('save', function (next) {

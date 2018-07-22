@@ -21,4 +21,9 @@ app.use(bodyParser.json());
 app.use('/users/authenticate', authRouter);
 app.use('/echo', authorization, echoRouter);
 
-app.listen(4000, () => console.log('Travels server is running on port 4000!'))
+app.use(function(error, req, res, next) {
+    //TODO: think of not sending code related error to user, at least in production
+    res.status(500).json({ message: error.message });
+  });
+
+app.listen(config.port, () => console.log(`Travels server is running on port ${config.port}!`))
