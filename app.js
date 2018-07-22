@@ -15,7 +15,7 @@ db.once('open', function() {
     console.log('Connected to MongoDb Atlas');
 });
 
-app.use(cors());
+app.use(cors({exposedHeaders:['x-auth-token']}));
 app.use(bodyParser.json());
 
 app.use('/users/authenticate', authRouter);
@@ -26,4 +26,4 @@ app.use(function(error, req, res, next) {
     res.status(500).json({ message: error.message });
   });
 
-app.listen(config.port, () => console.log(`Travels server is running on port ${config.port}!`))
+app.listen(config.port, () => console.log(`Travels server is running on port ${config.port}`))
