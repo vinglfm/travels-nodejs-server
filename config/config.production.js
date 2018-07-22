@@ -7,6 +7,11 @@ module.exports = {
     auth: {
         salt: 1,
         secret: 'secret',
-        mask: 'mask'
-    }
+        mask: 'mask',
+        facebook: {
+            clientId: '',
+            clientSecret: ''
+        }
+    },
+    port: 4000
 };
