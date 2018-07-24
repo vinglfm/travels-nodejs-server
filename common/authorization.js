@@ -12,7 +12,7 @@ module.exports = (req, res, next) => {
             }
         });    
     } else {
-      const err = new Error('Token is not specified');
+      const err = new Error('Access token is not specified');
       err.status = 400;
       return next(err);
     }

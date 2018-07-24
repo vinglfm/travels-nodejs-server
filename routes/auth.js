@@ -36,7 +36,7 @@ router.post('/signIn', (req, res, next) => {
 });
 
 router.route('/facebook')
-    .post(passport.authenticate('facebook-token', {session: false}), function(req, res, next) {
+    .post(passport.authenticate('facebook-token', {session: false}), function(req, res) {
         if (!req.user) {
             return res.send(401, 'User Not Authenticated');
         }
