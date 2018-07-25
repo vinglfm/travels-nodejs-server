@@ -14,7 +14,7 @@ app.use(bodyParser.json());
 app.use('/users/authenticate', authRouter);
 app.use('/echo', authorization, echoRouter);
 
-app.use(function(error, req, res) {
+app.use(function(error, req, res, next) {
     let message;
     if (process.env.NODE_ENV === 'development') {
         message = error.message;

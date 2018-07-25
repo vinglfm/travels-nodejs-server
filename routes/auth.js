@@ -6,13 +6,14 @@ const config = require('../config');
 require('../common/passport')();
 
 const maskPassword = (password) => {
-    return config.auth.mask + password.toUpperCase().substr(4);
+    const maskPart = password && password.length > 4 ? password: config.auth.mask;
+    return config.auth.mask + maskPart.toUpperCase().substr(4);
 };
 
 const generateToken = (user, password) => {
     return  jwt.sign({
         'user': user,
-        'password': maskPassword(password) 
+        'amask': maskPassword(password) 
     }, config.auth.secret, {
         expiresIn: 1440
     });
@@ -30,7 +31,8 @@ router.post('/signIn', (req, res, next) => {
             return res.json({ 
                 user: user.email,
                 token: generateToken(user.email, user.password),
-                fullName: user.fullName
+                fullName: user.fullName,
+                refreshToken: user.refreshToken.token
             });
     }});
 });
@@ -58,10 +60,33 @@ router.post('/signUp', (req, res, next) => {
             return res.json({ 
                 user: user.email,
                 token: generateToken(user.email, user.password),
-                fullName: user.fullName
+                fullName: user.fullName,
+                refreshToken: user.refreshToken.token
             });
         }
     });
+});
+
+//TODO: consider prohibit multiple calls to this api
+router.post('/token', (req, res, next) => {
+    if(req.body.user && req.body.refreshToken) {
+        User.findOne({ email: req.body.user })
+        .exec(function (err, user) {
+            if(err) {
+                return res.send(400, 'Not valid user');
+            } else if (user.refreshToken.token !== req.body.refreshToken || user.refreshToken.expires > new Date()) {
+                return res.send(401, 'Not valid token');
+            } else {
+                return res.json({ 
+                    token: generateToken(user.email, user.password)
+                });
+            }
+        })
+    } else {
+        const err = new Error('Refresh token is not specified');
+        err.status = 400;
+        next(err);
+    }
 });
 
 module.exports = router;

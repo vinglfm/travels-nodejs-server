@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const randtoken = require('rand-token') ;
 const config = require('../config');
 
+//TODO: bundle securety info into object
 const UserSchema = new mongoose.Schema({
     email: {
         type: String,
@@ -11,6 +13,10 @@ const UserSchema = new mongoose.Schema({
       },
       password: {
         type: String
+      },
+      refreshToken: {
+        token: String,
+        expiredDate: Date
       },
       facebookProvider: {
         type: {
@@ -30,21 +36,23 @@ UserSchema.pre('save', function (next) {
         return next(err);
       } else {
         user.password = hash;
+        user.refreshToken = generateRefreshToken();
         next();
       }
     });
   } else {
+    user.refreshToken = generateRefreshToken();
     next();
   }
 });
 
 UserSchema.statics.authenticate = function (email, password, callback) {
-  User.findOne({ email: email })
-    .exec(function (err, user) {
+  User.findOne({ email: email }).exec(function (err, user) {
+    
       if(err) {
         return callback(err);
       } else if(!user) {
-        err = new Error('User not found.');
+        err = new Error('User not found');
         err.status = 401;
         return callback(err);
       } else {
@@ -78,6 +86,16 @@ UserSchema.statics.upsertFbUser = function(accessToken, refreshToken, profile, c
     }
   });
 };
+
+//TODO: move refresh token logic to sepparate module
+function generateRefreshToken() {
+  let expiredDate = new Date();
+  expiredDate.setDate(expiredDate.getDate() + 2);
+  return {
+    token: randtoken.uid(256),
+    expires: expiredDate
+  };
+}
 
 const User = mongoose.model('User', UserSchema);
 module.exports = User;
