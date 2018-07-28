@@ -4,7 +4,7 @@ const config = require('../config');
 module.exports = (req, res, next) => {
     const token = req.body.token || req.query.token || req.headers['x-access-token'];
     if(token) {
-        const user = req.body.user || req.query.user;
+        const user = req.body.email || req.query.email;
         jwt.verify(token, config.auth.secret, function(err, decoded) {
             console.log(decoded);
             if(err) {
