@@ -23,6 +23,7 @@ app.use(function(error, req, res, next) {
     } else {
         message = 'Internal server error. Please, contact support';
     }
+    console.log(error);
     return res.status(500).json({ message });
   });
 

@@ -11,7 +11,7 @@ const maskPassword = (password) => {
 };
 
 const generateToken = (user, password) => {
-    return  jwt.sign({
+    return jwt.sign({
         'user': user,
         'amask': maskPassword(password) 
     }, config.auth.secret, {
@@ -73,6 +73,8 @@ router.post('/token', (req, res, next) => {
         User.findOne({ email: req.body.user })
         .exec(function (err, user) {
             if(err) {
+                return next(error);
+            } else if(!user) {
                 return res.send(400, 'Not valid user');
             } else if (user.refreshToken.token !== req.body.refreshToken || user.refreshToken.expires > new Date()) {
                 return res.send(401, 'Not valid token');

@@ -6,15 +6,13 @@ module.exports = (req, res, next) => {
     if(token) {
         const user = req.body.email || req.query.email;
         jwt.verify(token, config.auth.secret, function(err, decoded) {
-            console.log(decoded);
             if(err) {
                 return next(err);
             } else if(decoded.user !== user) {
                 const err = new Error('Access token is not valid');
                 err.status = 400;
                 return next(err);
-            }else {
-                req.token = token;
+            } else {
                 next();
             }
         });    

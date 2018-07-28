@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
       },
       refreshToken: {
         token: String,
-        expiredDate: Date
+        expires: Date
       },
       facebookProvider: {
         type: {
@@ -67,7 +67,7 @@ UserSchema.statics.authenticate = function (email, password, callback) {
     });
 };
 
-UserSchema.statics.upsertFbUser = function(accessToken, refreshToken, profile, cb) {
+UserSchema.statics.upsertFbUser = function(accessToken, refreshToken, profile, callback) {
   User.findOne({'facebookProvider.id': profile.id}, function(err, user) {
     if(!user) {
       const newUser = new User({
@@ -79,10 +79,10 @@ UserSchema.statics.upsertFbUser = function(accessToken, refreshToken, profile, c
         }
       });
       newUser.save(function(error, savedUser) {
-        return cb(error, savedUser);
+        return callback(error, savedUser);
       });
     } else {
-      return cb(err, user);
+      return callback(err, user);
     }
   });
 };
@@ -90,7 +90,7 @@ UserSchema.statics.upsertFbUser = function(accessToken, refreshToken, profile, c
 //TODO: move refresh token logic to sepparate module
 function generateRefreshToken() {
   let expiredDate = new Date();
-  expiredDate.setDate(expiredDate.getDate() + 2);
+  expiredDate.setDate(expiredDate.getDate() + 1);
   return {
     token: randtoken.uid(256),
     expires: expiredDate
