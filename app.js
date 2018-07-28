@@ -7,7 +7,11 @@ const authorization = require('./common/authorization');
 const authRouter = require('./routes/auth');
 const signOutRouter = require('./routes/signOut');
 const echoRouter = require('./routes/echo');
-require('./database');
+const log4js = require('log4js');
+require('./common/database');
+require('./common/log');
+
+const logger = log4js.getLogger('travels');
 
 app.use(cors({exposedHeaders:['x-auth-token']}));
 app.use(bodyParser.json());
@@ -23,7 +27,7 @@ app.use(function(error, req, res, next) {
     } else {
         message = 'Internal server error. Please, contact support';
     }
-    console.log(error);
+    logger.error(error);
     return res.status(500).json({ message });
   });
 

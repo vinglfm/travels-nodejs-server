@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const config = require('./config');
+const config = require('../config');
 
 mongoose.connect(`mongodb+srv://${config.mongo.user}:${config.mongo.password}@${config.mongo.url}`);
 const db = mongoose.connection;
