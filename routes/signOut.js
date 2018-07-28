@@ -6,7 +6,6 @@ router.post('/', (req, res) => {
         if(err) {
             return next(err);
         } else {
-            console.log(err, user, req.token);
             return res.json('Logged out');
         }
     });

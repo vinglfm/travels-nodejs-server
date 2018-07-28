@@ -15,7 +15,7 @@ const generateToken = (user, password) => {
         'user': user,
         'amask': maskPassword(password) 
     }, config.auth.secret, {
-        expiresIn: 1440
+        expiresIn: 1800
     });
 };
 
